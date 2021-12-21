@@ -26,9 +26,9 @@ public @interface CircuitBreaker {
 
     TimeUnit delayTimeUnit() default TimeUnit.MILLISECONDS;
 
-    long minThreshold() default 10;
+    long maxVolume() default 20;
 
     double failureRatio() default 0.6;
 
-    int successThreshold() default 2;
+    long successThreshold() default 2;
 }
