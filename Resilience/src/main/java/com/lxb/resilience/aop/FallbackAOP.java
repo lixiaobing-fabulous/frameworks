@@ -8,7 +8,10 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import static com.lxb.resilience.utils.ClassUtils.isDerived;
 
 @Aspect
 @Component
@@ -21,6 +24,10 @@ public class FallbackAOP {
         try {
             return pjp.proceed();
         } catch (Throwable t) {
+            Throwable cause = getCause(t);
+            if (!isDerived(cause.getClass(), fallback.fallbackFor()) || isDerived(cause.getClass(), fallback.skipFor())) {
+                throw cause;
+            }
             return handleFallback(pjp, fallback, t);
         }
     }
@@ -38,4 +45,13 @@ public class FallbackAOP {
         Class<?>        type      = pjp.getTarget().getClass();
         return type.getMethod(methodName, signature.getMethod().getParameterTypes());
     }
+
+    protected Throwable getCause(Throwable e) {
+        Throwable failure = e instanceof InvocationTargetException ? e.getCause() : e;
+        while (failure instanceof InvocationTargetException) {
+            failure = getCause(failure);
+        }
+        return failure;
+    }
+
 }

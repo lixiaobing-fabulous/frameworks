@@ -22,4 +22,8 @@ public @interface Retry {
     long jitter() default 200L;
 
     TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
+
+    Class<? extends Throwable>[] retryFor() default {Throwable.class};
+
+    Class<? extends Throwable>[] skipFor() default {};
 }

@@ -1,7 +1,7 @@
 package com.lxb.resilience.aop;
 
 import com.lxb.resilience.annotation.CircuitBreaker;
-import com.lxb.resilience.annotation.Retry;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
