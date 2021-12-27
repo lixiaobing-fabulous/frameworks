@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RetryTest {
-    @Retry(delay = 1000)
+    @Retry(delay = 0)
     public int retry() {
         System.out.println("execute...");
         return 1 / 0;

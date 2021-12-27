@@ -33,22 +33,13 @@ public class RetryAOP {
         if (maxRetries <= 0) {
             return pjp.proceed();
         }
-        // try once
-        ExecutionResult executionResult = execute(retry, pjp);
-        if (executionResult.isSuccess()) {
-            return executionResult.getResult();
-        }
-        if (shouldThrow(executionResult.getThrowable(), retry)) {
-            throw executionResult.getThrowable();
-        }
 
-        // try more
         Callable<ExecutionResult> execution = () -> execute(retry, pjp);
         long                      delay     = retry.delay();
 
         Callable<ExecutionResult> retryExecute = () -> {
             ExecutionResult result = null;
-            for (int i = 0; i < maxRetries - 1; i++) {
+            for (int i = 0; i < maxRetries; i++) {
                 if (delay <= 0) {
                     // no delay
                     result = execution.call();
@@ -56,13 +47,15 @@ public class RetryAOP {
                     ScheduledFuture<ExecutionResult> future = executorService.schedule(execution, delay, retry.timeUnit());
                     result = future.get();
                 }
-                if (result.isSuccess()) {
+                if (result.isSuccess() || shouldThrow(result.getThrowable(), retry)) {
                     break;
                 }
             }
             return result;
         };
         long maxDuration = retry.maxDuration();
+        ExecutionResult executionResult ;
+
         if (maxDuration <= 0) {
             // no time limit
             executionResult = retryExecute.call();

@@ -28,7 +28,8 @@ public class CircuitBreakerAOP {
         CircuitBreaker  circuitBreaker = signature.getMethod().getAnnotation(CircuitBreaker.class);
         SlidingWindow   slidingWindow  = slidingWindowsCache.computeIfAbsent(circuitBreaker, key -> new SlidingWindow(key));
         slidingWindow.computeStatus();
-
+        System.out.println("状态:" + slidingWindow.status + "，请求数：" + slidingWindow.requests + ", 失败数:" + slidingWindow.failures
+                + ", 成功尝试数:" + slidingWindow.successTrials);
         if (slidingWindow.isOpen()) {
             throw new CircuitBreakerException();
         }
@@ -60,6 +61,7 @@ public class CircuitBreakerAOP {
         private final long                         maxVolume;
         private final long                         successThreshold;
         private final double                       failureRatio;
+        private final long                         minRequest;
 
         private final    LongAdder requests      = new LongAdder();
         private final    LongAdder failures      = new LongAdder();
@@ -77,6 +79,7 @@ public class CircuitBreakerAOP {
             this.maxVolume = circuitBreaker.maxVolume();
             this.successThreshold = circuitBreaker.successThreshold();
             this.failureRatio = circuitBreaker.failureRatio();
+            this.minRequest = circuitBreaker.minVolume();
         }
 
         private void reset() {
@@ -135,7 +138,7 @@ public class CircuitBreakerAOP {
         }
 
         boolean shouldClosed() {
-            return currentFailureRatio() < failureRatio;
+            return Double.isNaN(currentFailureRatio()) || (requests.intValue() < minRequest) || currentFailureRatio() < failureRatio;
         }
 
         boolean shouldOpen() {
@@ -152,8 +155,7 @@ public class CircuitBreakerAOP {
         }
 
         boolean shouldHalfOpen() {
-            return System.nanoTime() - delayTimeUnit.toNanos(delay) > openTime
-                    && shouldClosed();
+            return System.nanoTime() - delayTimeUnit.toNanos(delay) > openTime;
         }
 
         public SlidingWindow computeStatus() {

@@ -1,14 +1,12 @@
 package com.lxb.resilience;
 
-import com.lxb.resilience.annotation.Retry;
-import com.lxb.resilience.test.FallbackTest;
-import com.lxb.resilience.test.RetryTest;
+import com.lxb.resilience.exception.CircuitBreakerException;
+import com.lxb.resilience.test.CircuitBreakerTest;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-import java.io.IOException;
 
 @EnableAspectJAutoProxy
 @Configuration
@@ -16,7 +14,14 @@ import java.io.IOException;
 public class Application {
     public static void main(String[] args) throws InterruptedException {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Application.class);
-        RetryTest                          bean    = context.getBean(RetryTest.class);
-        System.out.println(bean.retry());
+        CircuitBreakerTest                 bean    = context.getBean(CircuitBreakerTest.class);
+        for (int i = 0; i < 20; i++) {
+            try {
+                Thread.sleep(1000);
+                bean.test();
+            } catch (CircuitBreakerException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -28,6 +28,8 @@ public @interface CircuitBreaker {
 
     long maxVolume() default 20;
 
+    long minVolume() default 3;
+
     double failureRatio() default 0.6;
 
     long successThreshold() default 2;
