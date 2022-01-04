@@ -1,7 +1,8 @@
 package com.lxb.resilience.test;
 
-import com.lxb.resilience.annotation.Retry;
 import org.springframework.stereotype.Component;
+
+import com.lxb.resilience.annotation.Retry;
 
 @Component
 public class RetryTest {

@@ -1,7 +1,8 @@
 package com.lxb.resilience.test;
 
-import com.lxb.resilience.annotation.RateLimit;
 import org.springframework.stereotype.Component;
+
+import com.lxb.resilience.annotation.RateLimit;
 
 @Component
 public class RateLimitTest {

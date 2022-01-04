@@ -16,10 +16,10 @@
  */
 package com.lxb.resilience.utils;
 
+import static com.lxb.resilience.function.ThrowableSupplier.execute;
+
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
-
-import static com.lxb.resilience.function.ThrowableSupplier.execute;
 
 
 /**

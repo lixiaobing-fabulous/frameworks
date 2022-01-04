@@ -1,15 +1,17 @@
 package com.lxb.resilience.test;
 
 
-import com.lxb.resilience.annotation.CircuitBreaker;
-import lombok.SneakyThrows;
+import java.util.Random;
+
 import org.springframework.stereotype.Component;
 
-import java.util.Random;
+import com.lxb.resilience.annotation.CircuitBreaker;
+
+import lombok.SneakyThrows;
 
 @Component
 public class CircuitBreakerTest {
-    Random random = new Random();
+    private Random random = new Random();
 
     @CircuitBreaker(maxVolume = 10, delay = 3000)
     @SneakyThrows
