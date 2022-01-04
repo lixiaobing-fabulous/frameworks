@@ -5,8 +5,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-import com.lxb.resilience.test.FallbackTest;
-
 
 @EnableAspectJAutoProxy
 @Configuration
@@ -36,9 +34,16 @@ public class Application {
         //            }
         //        }
 
-        FallbackTest bean = context.getBean(FallbackTest.class);
-        bean.fallbackTest();
+        // 回退
+        //        FallbackTest bean = context.getBean(FallbackTest.class);
+        //        bean.fallbackTest();
 
+        // 重试
+        //        RetryTest bean = context.getBean(RetryTest.class);
+        //        bean.retry();
 
+        // 超时
+        //        TestTimeout bean = context.getBean(TestTimeout.class);
+        //        bean.timeout();
     }
 }

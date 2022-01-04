@@ -28,25 +28,26 @@ public class RetryAOP {
 
     @Around("@annotation(com.lxb.resilience.annotation.Retry)")
     public Object doAround(ProceedingJoinPoint pjp) throws Throwable {
-        MethodSignature signature  = (MethodSignature) pjp.getSignature();
-        Retry           retry      = signature.getMethod().getAnnotation(Retry.class);
-        int             maxRetries = retry.maxRetries();
+        MethodSignature signature = (MethodSignature) pjp.getSignature();
+        Retry retry = signature.getMethod().getAnnotation(Retry.class);
+        int maxRetries = retry.maxRetries();
         // no retry
         if (maxRetries <= 0) {
             return pjp.proceed();
         }
 
         Callable<ExecutionResult> execution = () -> execute(retry, pjp);
-        long                      delay     = retry.delay();
+        long delay = retry.delay();
 
         Callable<ExecutionResult> retryExecute = () -> {
             ExecutionResult result = null;
             for (int i = 0; i < maxRetries; i++) {
-                if (delay <= 0) {
+                if (delay <= 0 || i == 0) {
                     // no delay
                     result = execution.call();
                 } else {
-                    ScheduledFuture<ExecutionResult> future = executorService.schedule(execution, delay, retry.timeUnit());
+                    ScheduledFuture<ExecutionResult> future =
+                            executorService.schedule(execution, delay, retry.timeUnit());
                     result = future.get();
                 }
                 if (result.isSuccess() || shouldThrow(result.getThrowable(), retry)) {
@@ -56,7 +57,7 @@ public class RetryAOP {
             return result;
         };
         long maxDuration = retry.maxDuration();
-        ExecutionResult executionResult ;
+        ExecutionResult executionResult;
 
         if (maxDuration <= 0) {
             // no time limit
@@ -93,9 +94,9 @@ public class RetryAOP {
     @Data
     @Builder
     private static class ExecutionResult {
-        private Object    result;
+        private Object result;
         private Throwable throwable;
-        private boolean   success;
+        private boolean success;
     }
 
     protected Throwable getCause(Throwable e) {
