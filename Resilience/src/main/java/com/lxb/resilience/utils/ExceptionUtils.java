@@ -25,7 +25,7 @@ import java.util.Arrays;
 /**
  * {@link Exception} Utilities class
  *
- * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
+ * @author lixiaobing
  * @since 1.0.0
  */
 public class ExceptionUtils {

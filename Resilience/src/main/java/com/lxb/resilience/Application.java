@@ -1,5 +1,6 @@
 package com.lxb.resilience;
 
+import com.lxb.resilience.test.TestTimeout;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -43,7 +44,7 @@ public class Application {
         //        bean.retry();
 
         // 超时
-        //        TestTimeout bean = context.getBean(TestTimeout.class);
-        //        bean.timeout();
+                TestTimeout bean = context.getBean(TestTimeout.class);
+                bean.timeout();
     }
 }
