@@ -16,6 +16,7 @@ public class DefaultAdvisor implements Advisor {
     public DefaultAdvisor(PointCut pointCut, MethodInterceptor methodInterceptor, int priority) {
         this.pointCut = pointCut;
         this.methodInterceptor = methodInterceptor;
+        this.priority = priority;
     }
 
     @Override
