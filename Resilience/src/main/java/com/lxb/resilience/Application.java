@@ -1,21 +1,20 @@
 package com.lxb.resilience;
 
-import com.lxb.resilience.test.TestTimeout;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+
+import com.lxb.resilience.test.RetryTest;
 
 
-@EnableAspectJAutoProxy
 @Configuration
-@ComponentScan("com.lxb.resilience")
+@ComponentScan("com.lxb")
 public class Application {
     public static void main(String[] args) throws InterruptedException {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Application.class);
 
-        // 断路器
-        //        CircuitBreakerTest                 bean    = context.getBean(CircuitBreakerTest.class);
+        //        断路器
+        //        CircuitBreakerTest bean = context.getBean(CircuitBreakerTest.class);
         //        for (int i = 0; i < 20; i++) {
         //            try {
         //                Thread.sleep(1000);
@@ -35,16 +34,16 @@ public class Application {
         //            }
         //        }
 
-        // 回退
-        //        FallbackTest bean = context.getBean(FallbackTest.class);
-        //        bean.fallbackTest();
+        //         回退
+        //                FallbackTest bean = context.getBean(FallbackTest.class);
+        //                bean.fallbackTest();
 
         // 重试
-        //        RetryTest bean = context.getBean(RetryTest.class);
-        //        bean.retry();
+        RetryTest bean = context.getBean(RetryTest.class);
+        bean.retry();
 
         // 超时
-                TestTimeout bean = context.getBean(TestTimeout.class);
-                bean.timeout();
+        //        TestTimeout bean = context.getBean(TestTimeout.class);
+        //        bean.timeout();
     }
 }

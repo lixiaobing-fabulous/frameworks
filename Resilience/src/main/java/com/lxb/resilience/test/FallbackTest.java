@@ -7,7 +7,7 @@ import com.lxb.resilience.annotation.Fallback;
 @Component
 public class FallbackTest {
 
-    @Fallback(fallbackMethod = "fallback", fallbackFor = IllegalArgumentException.class, skipFor = IllegalStateException.class)
+    @Fallback(fallbackMethod = "fallback", fallbackFor = ArithmeticException.class, skipFor = IllegalStateException.class)
     public int fallbackTest() throws InterruptedException {
         return 1 / 0;
     }

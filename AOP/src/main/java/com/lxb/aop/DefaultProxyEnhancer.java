@@ -1,8 +1,9 @@
 package com.lxb.aop;
 
+import org.springframework.stereotype.Component;
+
 import com.lxb.aop.cglib.CglibProxy;
 import com.lxb.aop.jdk.JdkProxy;
-import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultProxyEnhancer implements AopProxy {

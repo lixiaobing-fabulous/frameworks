@@ -7,10 +7,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * @author lixiaobing <lixiaobing@kuaishou.com>
+ * Created on 2022-01-25
+ */
+
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 @Inherited
-public @interface Around {
-    String value();
+public @interface Order {
+    int value() default 0;
 }

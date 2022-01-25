@@ -1,10 +1,10 @@
 package com.lxb.aop.jdk;
 
 
-import com.lxb.aop.AopProxy;
-
 import static com.lxb.aop.util.ClassLoaderUtil.getClassLoader;
 import static java.lang.reflect.Proxy.newProxyInstance;
+
+import com.lxb.aop.AopProxy;
 
 public class JdkProxy implements AopProxy {
 

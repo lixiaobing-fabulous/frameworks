@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
+@Target({ElementType.TYPE})
 @Inherited
-public @interface Around {
+public @interface Before {
     String value();
 }

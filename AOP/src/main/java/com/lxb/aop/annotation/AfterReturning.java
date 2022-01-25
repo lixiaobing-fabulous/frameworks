@@ -7,10 +7,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * @author lixiaobing <lixiaobing@kuaishou.com>
+ * Created on 2022-01-24
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 @Inherited
-public @interface Around {
+public @interface AfterReturning {
     String value();
 }

@@ -1,19 +1,21 @@
 package com.lxb.aop.joinpoint;
 
-import com.lxb.aop.interceptor.InterceptorMethod;
-
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
+import com.lxb.aop.advisor.Advisor;
+import com.lxb.aop.interceptor.MethodInterceptor;
+
+
 public class ChainableMethodAopJoinPoint implements MethodAopJoinPoint {
-    private final Method   method;
-    private final Object   target;
+    private final Method method;
+    private final Object target;
     private final Object[] parameters;
 
     private final List<Object> interceptors;
-    private       int          pos;
-    private final int          size;
+    private int pos;
+    private final int size;
 
     public ChainableMethodAopJoinPoint(Method method, Object target, Object[] params, Object... interceptors) {
         this.method = method;
@@ -27,16 +29,23 @@ public class ChainableMethodAopJoinPoint implements MethodAopJoinPoint {
     @Override
     public Object proceed() throws Throwable {
         if (pos < size) {
-            int               currentPos        = pos++;
-            Object            interceptor       = interceptors.get(currentPos);
-            InterceptorMethod interceptorMethod = (InterceptorMethod) interceptor;
-            return interceptorMethod.getMethod().invoke(interceptorMethod.getTarget(), this);
+            int currentPos = pos++;
+            Object interceptor = interceptors.get(currentPos);
+            Advisor advisor = (Advisor) interceptor;
+            PointCut pointCut = advisor.getPointCut();
+            if (pointCut.matches(this.method, target.getClass())) {
+                MethodInterceptor methodInterceptor = advisor.methodInterceptor();
+                return methodInterceptor.proceed(this);
+            } else {
+                return proceed();
+            }
+        } else {
+            return method.invoke(target, parameters);
         }
-        return method.invoke(target, parameters);
     }
 
     @Override
-    public Object getTarget() {
+    public Object getThis() {
         return target;
     }
 

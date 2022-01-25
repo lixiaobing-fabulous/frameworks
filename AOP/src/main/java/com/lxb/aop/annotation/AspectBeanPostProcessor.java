@@ -1,28 +1,32 @@
 package com.lxb.aop.annotation;
 
-import com.lxb.aop.DefaultProxyEnhancer;
-import com.lxb.aop.interceptor.AnnotationInterceptorMethod;
-import lombok.SneakyThrows;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.lxb.aop.DefaultProxyEnhancer;
+import com.lxb.aop.advisor.Advisor;
+import com.lxb.aop.annotation.processor.AdvisorAdaptor;
+import com.lxb.aop.annotation.processor.AdvisorAdaptorRegistry;
+
+import lombok.SneakyThrows;
 
 @Component
-public class AspectBeanPostProcessor implements BeanPostProcessor, ApplicationContextAware {
-    private ApplicationContext                applicationContext;
-    private List<AnnotationInterceptorMethod> allInterceptorMethods;
+public class AspectBeanPostProcessor implements SmartInstantiationAwareBeanPostProcessor, ApplicationContextAware {
+    private ApplicationContext applicationContext;
+    private List<Advisor> allAdvisors;
 
     @Autowired
     private DefaultProxyEnhancer defaultProxyEnhancer;
@@ -30,28 +34,35 @@ public class AspectBeanPostProcessor implements BeanPostProcessor, ApplicationCo
     @PostConstruct
     public void init() {
         Collection<Object> aspectObjs = applicationContext.getBeansWithAnnotation(Aspect.class).values();
-        allInterceptorMethods = new ArrayList<>();
+        AdvisorAdaptorRegistry advisorAdaptorRegistry = new AdvisorAdaptorRegistry();
+        List<AdvisorAdaptor> adaptors = advisorAdaptorRegistry.getAdaptors();
+        allAdvisors = new ArrayList<>();
         for (Object aspectObj : aspectObjs) {
             Method[] methods = aspectObj.getClass().getMethods();
-            List<AnnotationInterceptorMethod> interceptorMethods = Stream.of(methods).filter(method -> method.isAnnotationPresent(Around.class)).map(method -> {
-                Around                      annotation      = method.getAnnotation(Around.class);
-                Class<? extends Annotation> annotationClass = getAnnotationClass(annotation.value());
-                return new AnnotationInterceptorMethod(method, aspectObj, annotationClass);
-            }).collect(Collectors.toList());
-            allInterceptorMethods.addAll(interceptorMethods);
+            for (Method method : methods) {
+                for (AdvisorAdaptor adaptor : adaptors) {
+                    if (adaptor.support(method)) {
+                        Advisor advisor = adaptor.createAdvisor(method, aspectObj.getClass(), aspectObj);
+                        if (Objects.nonNull(advisor)) {
+                            allAdvisors.add(advisor);
+                        }
+                    }
+                }
+            }
         }
-
+        allAdvisors.sort(Comparator.comparingInt(Advisor::priority));
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        Class clazz = bean.getClass();
-        return defaultProxyEnhancer.proxy(bean, clazz, allInterceptorMethods);
-    }
-
     @SneakyThrows
-    private Class<? extends Annotation> getAnnotationClass(String value) {
-        return (Class<? extends Annotation>) Class.forName(value);
+    public Object postProcessBeforeInstantiation(Class beanClass, String beanName) throws BeansException {
+        Object[] advisors = allAdvisors.stream().filter(advisor -> advisor.getPointCut().matches(beanClass))
+                .toArray();
+        if (advisors.length == 0) {
+            return null;
+        }
+        Object bean = beanClass.newInstance();
+        return defaultProxyEnhancer.proxy(bean, beanClass, advisors);
     }
 
 

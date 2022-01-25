@@ -8,12 +8,11 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
+import com.lxb.aop.annotation.Around;
+import com.lxb.aop.annotation.Aspect;
+import com.lxb.aop.joinpoint.MethodAopJoinPoint;
 import com.lxb.resilience.annotation.CircuitBreaker;
 import com.lxb.resilience.exception.CircuitBreakerException;
 
@@ -23,9 +22,8 @@ public class CircuitBreakerAOP {
     private final ConcurrentMap<CircuitBreaker, SlidingWindow> slidingWindowsCache = new ConcurrentHashMap<>();
 
     @Around("@annotation(com.lxb.resilience.annotation.CircuitBreaker)")
-    public Object doAround(ProceedingJoinPoint pjp) throws Throwable {
-        MethodSignature signature      = (MethodSignature) pjp.getSignature();
-        CircuitBreaker  circuitBreaker = signature.getMethod().getAnnotation(CircuitBreaker.class);
+    public Object doAround(MethodAopJoinPoint joinPoint) throws Throwable {
+        CircuitBreaker  circuitBreaker = joinPoint.getMethod().getAnnotation(CircuitBreaker.class);
         SlidingWindow   slidingWindow  = slidingWindowsCache.computeIfAbsent(circuitBreaker, key -> new SlidingWindow(key));
         slidingWindow.computeStatus();
         System.out.println("状态:" + slidingWindow.status + "，请求数：" + slidingWindow.requests + ", 失败数:" + slidingWindow.failures
@@ -39,7 +37,7 @@ public class CircuitBreakerAOP {
 
         Object result = null;
         try {
-            result = pjp.proceed();
+            result = joinPoint.proceed();
             slidingWindow.success();
         } catch (Throwable e) {
             Throwable failure = getFailure(e);

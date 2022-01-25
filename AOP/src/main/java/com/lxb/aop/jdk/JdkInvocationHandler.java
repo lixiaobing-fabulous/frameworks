@@ -1,16 +1,14 @@
 package com.lxb.aop.jdk;
 
-import com.lxb.aop.interceptor.InterceptorMethod;
-import com.lxb.aop.joinpoint.ChainableMethodAopJoinPoint;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import com.lxb.aop.advisor.Advisor;
+import com.lxb.aop.joinpoint.ChainableMethodAopJoinPoint;
 
 public class JdkInvocationHandler implements InvocationHandler {
-    private final Object   source;
+    private final Object source;
     private final Object[] interceptors;
 
     public JdkInvocationHandler(Object source, Object[] interceptors) {
@@ -20,7 +18,7 @@ public class JdkInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        List<InterceptorMethod> interceptorMethods = Arrays.stream(interceptors).map(interceptor -> (InterceptorMethod) interceptor).filter(interceptorMethod -> interceptorMethod.supports(method, source)).collect(Collectors.toList());
-        return new ChainableMethodAopJoinPoint(method, source, args, interceptorMethods.toArray()).proceed();
+        return new ChainableMethodAopJoinPoint(method, source, args,
+                Arrays.stream(interceptors).map(Advisor.class::cast).toArray()).proceed();
     }
 }

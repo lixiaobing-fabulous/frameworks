@@ -9,12 +9,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
+import com.lxb.aop.annotation.Around;
+import com.lxb.aop.annotation.Aspect;
+import com.lxb.aop.joinpoint.MethodAopJoinPoint;
 import com.lxb.resilience.annotation.Retry;
 
 import lombok.Builder;
@@ -27,9 +26,8 @@ public class RetryAOP {
     private final ScheduledExecutorService executorService = newScheduledThreadPool(8);
 
     @Around("@annotation(com.lxb.resilience.annotation.Retry)")
-    public Object doAround(ProceedingJoinPoint pjp) throws Throwable {
-        MethodSignature signature = (MethodSignature) pjp.getSignature();
-        Retry retry = signature.getMethod().getAnnotation(Retry.class);
+    public Object doAround(MethodAopJoinPoint pjp) throws Throwable {
+        Retry retry = pjp.getMethod().getAnnotation(Retry.class);
         int maxRetries = retry.maxRetries();
         // no retry
         if (maxRetries <= 0) {
@@ -78,7 +76,7 @@ public class RetryAOP {
     }
 
     @SneakyThrows
-    private ExecutionResult execute(Retry retry, ProceedingJoinPoint pjp) {
+    private ExecutionResult execute(Retry retry, MethodAopJoinPoint pjp) {
         ExecutionResult.ExecutionResultBuilder builder = ExecutionResult.builder();
         try {
             builder.result(pjp.proceed())
