@@ -19,7 +19,7 @@ public abstract class AbstractMethodInterceptor implements MethodInterceptor {
 
     @Override
     public Object proceed(MethodAopJoinPoint joinpoint) throws Throwable {
-        return method.invoke(target, joinpoint.getThis());
+        return method.invoke(target, joinpoint.getParameters());
     }
 
 }
