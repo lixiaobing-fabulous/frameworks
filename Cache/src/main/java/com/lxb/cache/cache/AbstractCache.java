@@ -10,9 +10,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.lxb.cache.cachemanager.CacheManager;
 import com.lxb.cache.config.Configuration;
+import com.lxb.cache.fallback.CacheFallbackStorage;
 import com.lxb.cache.fallback.CacheLoader;
 import com.lxb.cache.fallback.CacheWriter;
+import com.lxb.cache.fallback.CompositeFallbackStorage;
 
 /**
  * @author lixiaobing <lixiaobing@kuaishou.com>
@@ -20,9 +23,29 @@ import com.lxb.cache.fallback.CacheWriter;
  */
 public abstract class AbstractCache<K, V> implements Cache<K, V> {
     private volatile boolean closed = false;
+    private final CacheManager cacheManager;
+    private final String cacheName;
     private Configuration<K, V> configuration;
-    private CacheLoader<K, V> cacheLoader;
     private CacheWriter<K, V> cacheWriter;
+    private CacheLoader<K, V> cacheLoader;
+    private final CacheFallbackStorage defaultFallbackStorage;
+
+    protected AbstractCache(CacheManager cacheManager, String cacheName, Configuration<K, V> configuration) {
+        this.cacheManager = cacheManager;
+        this.cacheName = cacheName;
+        this.configuration = configuration;
+        this.defaultFallbackStorage = new CompositeFallbackStorage(getClassLoader());
+        this.cacheLoader = this.defaultFallbackStorage;
+        this.cacheWriter = this.defaultFallbackStorage;
+    }
+    @Override
+    public final CacheManager getCacheManager() {
+        return cacheManager;
+    }
+
+    protected ClassLoader getClassLoader() {
+        return getCacheManager().getClassLoader();
+    }
 
     @Override
     public boolean containsKey(K key) {
@@ -288,5 +311,10 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
             getCacheWriter().delete(key);
         }
     }
+
+    protected final Configuration<K, V> getConfiguration() {
+        return this.configuration;
+    }
+
 
 }

@@ -57,4 +57,8 @@ public class ExpirableEntry<K, V> implements Entry<K, V> {
     }
 
 
+    public boolean isEternal() {
+        return Long.MAX_VALUE == getTimestamp();
+    }
+
 }

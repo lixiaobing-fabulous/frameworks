@@ -1,0 +1,2 @@
+com.lxb.serialize.DefaultDeserializer
+com.lxb.serialize.StringDeserializer

@@ -12,6 +12,7 @@
         <module>Resilience</module>
         <module>AOP</module>
         <module>Cache</module>
+        <module>Common</module>
     </modules>
 
     <properties>

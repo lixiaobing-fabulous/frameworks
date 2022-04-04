@@ -1,4 +1,4 @@
-package com.lxb.cache.cache.impl;
+package com.lxb.cache.inmem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,6 +6,8 @@ import java.util.Set;
 
 import com.lxb.cache.cache.AbstractCache;
 import com.lxb.cache.cache.ExpirableEntry;
+import com.lxb.cache.cachemanager.CacheManager;
+import com.lxb.cache.config.Configuration;
 
 /**
  * @author lixiaobing <lixiaobing@kuaishou.com>
@@ -13,6 +15,10 @@ import com.lxb.cache.cache.ExpirableEntry;
  */
 public class InMemoryCache<K, V> extends AbstractCache<K, V> {
     private final Map<K, ExpirableEntry<K, V>> cache = new HashMap<>();
+
+    public InMemoryCache(CacheManager cacheManager, String cacheName, Configuration<K, V> configuration) {
+        super(cacheManager, cacheName, configuration);
+    }
 
     @Override
     protected ExpirableEntry<K, V> removeEntry(K key) {
@@ -43,5 +49,10 @@ public class InMemoryCache<K, V> extends AbstractCache<K, V> {
     @Override
     protected void clearEntries() {
         cache.clear();
+    }
+
+    @Override
+    public <C extends Configuration<K, V>> C getConfiguration(Class<C> var1) {
+        return null;
     }
 }

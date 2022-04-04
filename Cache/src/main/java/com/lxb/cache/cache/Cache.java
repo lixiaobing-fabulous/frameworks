@@ -4,11 +4,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.lxb.cache.cachemanager.CacheManager;
+import com.lxb.cache.config.Configuration;
+
 /**
  * @author lixiaobing <lixiaobing@kuaishou.com>
  * Created on 2022-01-25
  */
 public interface Cache<K, V> {
+    CacheManager getCacheManager();
+
     boolean containsKey(K key);
 
     V get(K key);
@@ -46,6 +51,8 @@ public interface Cache<K, V> {
     void close();
 
     boolean isClosed();
+
+    <C extends Configuration<K, V>> C getConfiguration(Class<C> var1);
 
     interface Entry<K, V> {
         K getKey();

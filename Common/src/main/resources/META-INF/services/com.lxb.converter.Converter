@@ -1,0 +1,8 @@
+com.lxb.converter.String2BooleanConverter
+com.lxb.converter.String2ClassConverter
+com.lxb.converter.String2DoubleConverter
+com.lxb.converter.String2FloatConverter
+com.lxb.converter.String2URIConverter
+com.lxb.converter.StringToIntegerConverter
+com.lxb.converter.StringToLongConverter
+com.lxb.converter.StringToStringConverter
