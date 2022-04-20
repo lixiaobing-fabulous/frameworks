@@ -10,6 +10,8 @@ import com.lxb.cache.cachemanager.CacheManager;
 import com.lxb.cache.config.PropertiesCacheConfiguration;
 import com.lxb.cache.provider.CachingProvider;
 
+import lombok.SneakyThrows;
+
 /**
  * @author lixiaobing <lixiaobing@kuaishou.com>
  * Created on 2022-04-03
@@ -19,11 +21,17 @@ public final class Caching {
         return load(CachingProvider.class, Caching.class.getClassLoader()).iterator().next();
     }
 
+    @SneakyThrows
     public static void main(String[] args) {
         CachingProvider cachingProvider = Caching.getCachingProvider();
         CacheManager cacheManager = cachingProvider.getCacheManager(URI.create("in-memory://localhost/"), null);
         Cache<String, Integer> cache = cacheManager.createCache("simpleCache",
                 new PropertiesCacheConfiguration<String, Integer>(cachingProvider.getDefaultProperties()));
+        Cache<String, Integer> cache2 = cacheManager.createCache("simpleCache1",
+                new PropertiesCacheConfiguration<String, Integer>(cachingProvider.getDefaultProperties()));
+        Cache<String, Integer> cache3 = cacheManager.createCache("simpleCache2",
+                new PropertiesCacheConfiguration<String, Integer>(cachingProvider.getDefaultProperties()));
+
         System.out.println(cache);
         String key = "key";
         Integer value1 = 1;
@@ -35,6 +43,7 @@ public final class Caching {
 
         Integer value2 = cache.get(key);
         System.out.println(value2);
+        System.in.read();
     }
 
 }

@@ -165,8 +165,6 @@ public class DefaultCachingProvider implements CachingProvider {
         ClassLoader classLoader = getDefaultClassLoader();
         Enumeration<URL> resources = classLoader.getResources(DEFAULT_PROPERTIES_RESOURCE_NAME);
         List<Properties> propertiesList = new LinkedList<>();
-
-        //类路径读取配置
         while (resources.hasMoreElements()) {
             URL url = resources.nextElement();
             Properties properties = new Properties();
@@ -176,7 +174,6 @@ public class DefaultCachingProvider implements CachingProvider {
             }
         }
 
-        // 优先级排序
         propertiesList.sort((o1, o2) -> {
             Integer p1 =
                     Integer.decode(o1.getProperty(DEFAULT_PROPERTIES_PRIORITY_PROPERTY_NAME, "0x7fffffff"));
@@ -184,7 +181,6 @@ public class DefaultCachingProvider implements CachingProvider {
             return Integer.compare(p1, p2);
         });
 
-        // 优先级覆盖字段
         Properties result = new Properties();
         for (Properties properties : propertiesList) {
             for (String propertyName : properties.stringPropertyNames()) {

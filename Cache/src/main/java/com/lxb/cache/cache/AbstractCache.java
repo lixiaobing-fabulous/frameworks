@@ -1,5 +1,6 @@
 package com.lxb.cache.cache;
 
+import static com.lxb.cache.jmx.CacheJMXUtils.registerMBeansIfRequired;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Iterator;
@@ -16,6 +17,9 @@ import com.lxb.cache.fallback.CacheFallbackStorage;
 import com.lxb.cache.fallback.CacheLoader;
 import com.lxb.cache.fallback.CacheWriter;
 import com.lxb.cache.fallback.CompositeFallbackStorage;
+import com.lxb.cache.jmx.CacheStatistics;
+import com.lxb.cache.jmx.DefaultCacheStatistics;
+import com.lxb.cache.jmx.DummyCacheStatistics;
 
 /**
  * @author lixiaobing <lixiaobing@kuaishou.com>
@@ -29,6 +33,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
     private CacheWriter<K, V> cacheWriter;
     private CacheLoader<K, V> cacheLoader;
     private final CacheFallbackStorage defaultFallbackStorage;
+    private final CacheStatistics cacheStatistics;
 
     protected AbstractCache(CacheManager cacheManager, String cacheName, Configuration<K, V> configuration) {
         this.cacheManager = cacheManager;
@@ -37,7 +42,11 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
         this.defaultFallbackStorage = new CompositeFallbackStorage(getClassLoader());
         this.cacheLoader = this.defaultFallbackStorage;
         this.cacheWriter = this.defaultFallbackStorage;
+        this.cacheStatistics = resolveCacheStatistic();
+
+        registerMBeansIfRequired(this, cacheStatistics);
     }
+
     @Override
     public final CacheManager getCacheManager() {
         return cacheManager;
@@ -45,6 +54,11 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
     protected ClassLoader getClassLoader() {
         return getCacheManager().getClassLoader();
+    }
+
+    @Override
+    public String getName() {
+        return this.cacheName;
     }
 
     @Override
@@ -57,15 +71,25 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
     public V get(K key) {
         assertNotClosed();
         requireNonNull(key, "The key must not be null.");
-        ExpirableEntry<K, V> entry = getEntry(key);
-        if (Objects.isNull(entry)) {
-            if (configuration.isReadThrough()) {
-                return loadValue(key, true);
+        long startTime = System.currentTimeMillis();
+        V value = null;
+        try {
+            ExpirableEntry<K, V> entry = getEntry(key);
+            if (Objects.isNull(entry)) {
+                if (configuration.isReadThrough()) {
+                    value = loadValue(key, true);
+                }
+            } else {
+                value = getValue(entry);
             }
-        } else {
-            return getValue(entry);
+            return value;
+        } finally {
+            if (value != null) {
+                cacheStatistics.cacheHits();
+            }
+            cacheStatistics.cacheGets();
+            cacheStatistics.cacheGetsTime(System.currentTimeMillis() - startTime);
         }
-        return null;
     }
 
     @Override
@@ -109,11 +133,15 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
         assertNotClosed();
         requireKeyNotNull(key);
         boolean removed;
+        long startTime = System.currentTimeMillis();
+
         try {
             ExpirableEntry<K, V> oldEntry = removeEntry(key);
             removed = oldEntry != null;
         } finally {
             deleteIfWriteThrough(key);
+            cacheStatistics.cacheRemovals();
+            cacheStatistics.cacheRemovesTime(System.currentTimeMillis() - startTime);
         }
         return removed;
     }
@@ -158,6 +186,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
     @Override
     public void put(K key, V value) {
         assertNotClosed();
+        long startTime = System.currentTimeMillis();
         Entry<K, V> entry = null;
         try {
             if (!containsEntry(key)) {
@@ -169,6 +198,8 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
             if (Objects.nonNull(entry) && configuration.isWriteThrough()) {
                 getCacheWriter().write(entry);
             }
+            cacheStatistics.cachePuts();
+            cacheStatistics.cachePutsTime(System.currentTimeMillis() - startTime);
 
         }
     }
@@ -312,9 +343,17 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
         }
     }
 
-    protected final Configuration<K, V> getConfiguration() {
+    protected final boolean isStatisticsEnabled() {
+        return configuration.isStatisticsEnabled();
+    }
+
+    @Override
+    public final Configuration<K, V> getConfiguration() {
         return this.configuration;
     }
 
+    private CacheStatistics resolveCacheStatistic() {
+        return isStatisticsEnabled() ? new DefaultCacheStatistics() : DummyCacheStatistics.INSTANCE;
+    }
 
 }

@@ -52,7 +52,9 @@ public interface Cache<K, V> {
 
     boolean isClosed();
 
-    <C extends Configuration<K, V>> C getConfiguration(Class<C> var1);
+    <C extends Configuration<K, V>> C getConfiguration();
+
+    String getName();
 
     interface Entry<K, V> {
         K getKey();

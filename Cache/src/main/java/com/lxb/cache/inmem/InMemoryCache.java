@@ -51,8 +51,4 @@ public class InMemoryCache<K, V> extends AbstractCache<K, V> {
         cache.clear();
     }
 
-    @Override
-    public <C extends Configuration<K, V>> C getConfiguration(Class<C> var1) {
-        return null;
-    }
 }

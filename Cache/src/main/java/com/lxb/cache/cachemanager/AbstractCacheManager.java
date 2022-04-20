@@ -15,6 +15,9 @@ import com.lxb.cache.cache.Cache;
 import com.lxb.cache.config.Configuration;
 import com.lxb.cache.config.MutableConfiguration;
 import com.lxb.cache.config.PropertiesCacheConfiguration;
+import com.lxb.cache.jmx.CacheStatistics;
+import com.lxb.cache.jmx.DefaultCacheStatistics;
+import com.lxb.cache.jmx.DummyCacheStatistics;
 import com.lxb.cache.provider.CachingProvider;
 import com.lxb.serialize.Deserializers;
 import com.lxb.serialize.Serializers;
@@ -34,7 +37,7 @@ public abstract class AbstractCacheManager implements CacheManager {
     private volatile boolean closed;
     private final URI uri;
     private final Properties properties;
-    private final Configuration cacheConfiguration;
+    private final Configuration configuration;
 
 
     public AbstractCacheManager(CachingProvider cachingProvider, URI uri, ClassLoader classLoader,
@@ -42,7 +45,7 @@ public abstract class AbstractCacheManager implements CacheManager {
         this.cachingProvider = cachingProvider;
         this.uri = uri == null ? cachingProvider.getDefaultURI() : uri;
         this.properties = properties == null ? cachingProvider.getDefaultProperties() : properties;
-        this.cacheConfiguration = new PropertiesCacheConfiguration(this.properties);
+        this.configuration = new PropertiesCacheConfiguration(this.properties);
         this.classLoader = classLoader == null ? cachingProvider.getDefaultClassLoader() : classLoader;
         this.serializers = initSerializers(this.classLoader);
         this.deserializers = initDeserializers(this.classLoader);
@@ -77,13 +80,15 @@ public abstract class AbstractCacheManager implements CacheManager {
     @Override
     public <K, V> Cache<K, V> getCache(String cacheName, Class<K> keyType, Class<V> valueType) {
         MutableConfiguration<K, V> kvMutableConfiguration =
-                new MutableConfiguration<K, V>(cacheConfiguration).setTypes(keyType, valueType);
+                new MutableConfiguration<K, V>(configuration).setTypes(keyType, valueType);
         return getOrCreateCache(cacheName, kvMutableConfiguration,
                 false);
     }
+
     @Override
     public <K, V> Cache<K, V> getCache(String cacheName) {
-        return getCache(cacheName, (Class<K>) cacheConfiguration.getKeyType(), (Class<V>) cacheConfiguration.getValueType());
+        return getCache(cacheName, (Class<K>) configuration.getKeyType(),
+                (Class<V>) configuration.getValueType());
     }
 
     @Override
@@ -123,7 +128,7 @@ public abstract class AbstractCacheManager implements CacheManager {
         } else {
             cache = cacheRepository.get(cacheName);
             if (cache != null) {
-                C currentConfiguration = (C) cache.getConfiguration(configuration.getClass());
+                C currentConfiguration = (C) cache.getConfiguration();
                 if (!currentConfiguration.getKeyType().isAssignableFrom(configuration.getKeyType())
                         || !configuration.getValueType().isAssignableFrom(configuration.getValueType())) {
                     String message = format("The specified key[%s] and/or value[%s] types are incompatible with "
@@ -203,6 +208,14 @@ public abstract class AbstractCacheManager implements CacheManager {
     }
 
     protected void doClose() {
+    }
+
+    protected final boolean isStatisticsEnabled() {
+        return configuration.isStatisticsEnabled();
+    }
+
+    private CacheStatistics resolveCacheStatistic() {
+        return isStatisticsEnabled() ? new DefaultCacheStatistics() : DummyCacheStatistics.INSTANCE;
     }
 
 }

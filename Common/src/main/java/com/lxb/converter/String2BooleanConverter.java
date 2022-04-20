@@ -1,7 +1,6 @@
 package com.lxb.converter;
 
 import static com.lxb.utils.StringUtils.isNotEmpty;
-import static com.lxb.utils.TypeUtil.findActualTypeArgumentClass;
 import static java.lang.Boolean.valueOf;
 
 /**

@@ -126,15 +126,12 @@ public class JedisCache<K extends Serializable, V extends Serializable> extends 
         System.arraycopy(suffixBytes, 0, bytes, keyPrefixBytesLength, suffixBytesLength);
         return bytes;
     }
+
     @Override
     protected void doClose() {
         this.jedis.close();
     }
 
-    @Override
-    public <C extends Configuration<K, V>> C getConfiguration(Class<C> var1) {
-        return null;
-    }
 }
 
 
