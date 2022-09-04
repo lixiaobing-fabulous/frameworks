@@ -2,4 +2,4 @@
 - Resiliance: 容错框架
 - AOP: 切面框架
 - Cache: 缓存框架
-- SimpleRpc: 简易的rpc框架
+- Rpc: 微内核可插拔的rpc框架

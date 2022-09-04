@@ -1,0 +1,3 @@
+com.lxb.rpc.codec.compression.gzip.GzipCompression
+com.lxb.rpc.codec.compression.zlib.DeflateCompression
+com.lxb.rpc.codec.compression.zlib.ZlibCompression

@@ -1,0 +1,2 @@
+com.lxb.rpc.loadbalance.RandomServiceInstanceSelector
+com.lxb.rpc.loadbalance.RoundRobinServiceInstanceSelector

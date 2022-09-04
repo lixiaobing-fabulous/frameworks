@@ -1,0 +1,2 @@
+com.lxb.rpc.compression.lz4.Lz4Compression
+com.lxb.rpc.compression.lz4.Lz4FrameCompression

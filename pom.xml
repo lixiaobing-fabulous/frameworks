@@ -13,7 +13,7 @@
         <module>AOP</module>
         <module>Cache</module>
         <module>Common</module>
-        <module>SimpleRpc</module>
+        <module>Rpc</module>
     </modules>
 
     <properties>

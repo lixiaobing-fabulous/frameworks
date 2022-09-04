@@ -1,0 +1,3 @@
+com.lxb.rpc.codec.serialization.java.JavaSerialization
+com.lxb.rpc.codec.serialization.java.AdvanceJavaSerialization
+com.lxb.rpc.codec.serialization.jaxb.JaxbSerialization
