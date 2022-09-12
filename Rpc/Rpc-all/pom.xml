@@ -65,7 +65,37 @@
             <artifactId>Rpc-compression-snappy</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.lxb</groupId>
+            <artifactId>Rpc-serialization-fst</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lxb</groupId>
+            <artifactId>Rpc-serialization-kryo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lxb</groupId>
+            <artifactId>Rpc-serialization-hessian</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.lxb</groupId>
+            <artifactId>Rpc-serialization-protostuff</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lxb</groupId>
+            <artifactId>Rpc-serialization-jackson</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lxb</groupId>
+            <artifactId>Rpc-serialization-fastjson</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
     </dependencies>
 

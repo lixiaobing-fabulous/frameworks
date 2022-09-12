@@ -1,0 +1,3 @@
+com.lxb.rpc.serialization.protostuff.ProtobufSerialization
+com.lxb.rpc.serialization.protostuff.ProtoSerialization
+com.lxb.rpc.serialization.protostuff.ProtostuffSerialization

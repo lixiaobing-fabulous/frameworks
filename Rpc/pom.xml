@@ -15,6 +15,7 @@
         <module>Rpc-all</module>
         <module>Rpc-plugin</module>
         <module>Rpc-core</module>
+        <module>Rpc-api</module>
     </modules>
 
     <artifactId>Rpc</artifactId>

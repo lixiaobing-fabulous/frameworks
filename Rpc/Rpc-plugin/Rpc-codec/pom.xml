@@ -15,6 +15,12 @@
         <module>Rpc-compression-lz4</module>
         <module>Rpc-compression-lzma</module>
         <module>Rpc-compression-snappy</module>
+        <module>Rpc-serialization-fst</module>
+        <module>Rpc-serialization-kryo</module>
+        <module>Rpc-serialization-hessian</module>
+        <module>Rpc-serialization-protostuff</module>
+        <module>Rpc-serialization-jackson</module>
+        <module>Rpc-serialization-fastjson</module>
     </modules>
 
     <properties>

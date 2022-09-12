@@ -1,9 +1,9 @@
 package com.lxb.rpc.cluster.discovery.backup;
 
 
+
 import com.lxb.extension.URL;
 import com.lxb.rpc.cluster.Shard;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,18 +14,17 @@ import java.util.Map;
 /**
  * 备份数据
  */
-@Data
 public class BackupDatum implements Serializable {
 
-    private static final long                             serialVersionUID = 6912085093846011589L;
+    private static final long serialVersionUID = 6912085093846011589L;
     /**
      * 集群信息
      */
-    protected            Map<String, List<BackupShard>>   clusters;
+    protected Map<String, List<BackupShard>> clusters;
     /**
      * 配置信息
      */
-    protected            Map<String, Map<String, String>> configs;
+    protected Map<String, Map<String, String>> configs;
 
     public BackupDatum() {
     }

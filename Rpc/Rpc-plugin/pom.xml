@@ -12,6 +12,7 @@
     <modules>
         <module>Rpc-proxy</module>
         <module>Rpc-codec</module>
+        <module>Rpc-registry</module>
     </modules>
     <artifactId>Rpc-plugin</artifactId>
 

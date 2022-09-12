@@ -1,16 +1,15 @@
 package com.lxb.rpc.cluster.discovery.backup;
 
 
+
 import com.lxb.extension.URL;
 import com.lxb.rpc.cluster.Shard;
-import lombok.Data;
 
 import java.io.Serializable;
 
 /**
  * 存储的分片信息
  */
-@Data
 public class BackupShard implements Serializable {
     private static final long serialVersionUID = -1479600922503780968L;
     public static final String NAME = "name";

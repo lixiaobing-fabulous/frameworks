@@ -1,0 +1,2 @@
+com.lxb.rpc.cluster.discovery.registry.fix.FixRegistryFactory
+com.lxb.rpc.cluster.discovery.registry.memory.MemoryRegistryFactory
