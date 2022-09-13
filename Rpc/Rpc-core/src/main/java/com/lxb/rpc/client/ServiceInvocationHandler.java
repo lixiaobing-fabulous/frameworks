@@ -1,6 +1,10 @@
 package com.lxb.rpc.client;
 
+import com.lxb.extension.URL;
 import com.lxb.rpc.InvocationRequest;
+import com.lxb.rpc.cluster.discovery.event.ClusterEvent;
+import com.lxb.rpc.cluster.discovery.naming.ClusterHandler;
+import com.lxb.rpc.cluster.discovery.registry.Registry;
 import com.lxb.rpc.loadbalance.ServiceInstanceSelector;
 import com.lxb.rpc.service.ServiceInstance;
 import com.lxb.rpc.service.ServiceRegistry;
@@ -12,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import static com.lxb.rpc.Plugin.REGISTRY;
 import static com.lxb.rpc.client.ExchangeFuture.createExchangeFuture;
 import static com.lxb.rpc.client.ExchangeFuture.removeExchangeFuture;
 
@@ -51,7 +56,7 @@ public class ServiceInvocationHandler implements InvocationHandler {
 
     private Object execute(InvocationRequest request, Object proxy) {
 
-        ServiceInstance serviceInstance = selectServiceProviderInstance();
+        ServiceInstance serviceInstance = selectServiceProviderInstance(request);
 
         ChannelFuture channelFuture = rpcClient.connect(serviceInstance);
 
@@ -72,8 +77,17 @@ public class ServiceInvocationHandler implements InvocationHandler {
         channelFuture.channel().writeAndFlush(request);
     }
 
-    private ServiceInstance selectServiceProviderInstance() {
+    private ServiceInstance selectServiceProviderInstance(InvocationRequest request) {
         List<ServiceInstance> serviceInstances = serviceRegistry.getServiceInstances(serviceName);
+        URL                   url              = URL.valueOf("broadcast://0.0.0.0" + "?alias=" + request.getServiceName() + "&serviceName=" + request.getServiceName());
+        Registry              registry         = REGISTRY.get("broadcast").getRegistry(url);
+        registry.open();
+        registry.subscribe(url, new ClusterHandler() {
+            @Override
+            public void handle(ClusterEvent event) {
+                System.out.println(event);
+            }
+        });
         return selector.select(serviceInstances);
     }
 

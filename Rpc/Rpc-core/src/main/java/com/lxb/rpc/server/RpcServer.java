@@ -1,5 +1,7 @@
 package com.lxb.rpc.server;
 
+import com.lxb.extension.URL;
+import com.lxb.rpc.cluster.discovery.registry.Registry;
 import com.lxb.rpc.codec.MessageDecoder;
 import com.lxb.rpc.codec.MessageEncoder;
 import com.lxb.rpc.context.ServiceContext;
@@ -19,9 +21,12 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import lombok.SneakyThrows;
 
 import java.util.HashMap;
 import java.util.UUID;
+
+import static com.lxb.rpc.Plugin.REGISTRY;
 
 public class RpcServer implements AutoCloseable {
 
@@ -62,8 +67,12 @@ public class RpcServer implements AutoCloseable {
         return serviceInstance;
     }
 
+    @SneakyThrows
     public RpcServer registerService(String serviceName, Object service) {
         serviceContext.registerService(serviceName, service);
+        Registry registry = REGISTRY.get("broadcast").getRegistry(URL.valueOf("broadcast://0.0.0.0"));
+        registry.open().get();
+        registry.register(URL.valueOf("joy://" + localServiceInstance.getHost() + ":" + localServiceInstance.getPort() + "?alias=" + serviceName + "&serviceName=" + serviceName));
         return this;
     }
 

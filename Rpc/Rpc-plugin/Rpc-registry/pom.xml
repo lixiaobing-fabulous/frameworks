@@ -14,6 +14,7 @@
     <modules>
         <module>Rpc-registry-broadcast</module>
         <module>Rpc-registry-consul</module>
+        <module>Rpc-registry-etcd</module>
     </modules>
 
     <properties>

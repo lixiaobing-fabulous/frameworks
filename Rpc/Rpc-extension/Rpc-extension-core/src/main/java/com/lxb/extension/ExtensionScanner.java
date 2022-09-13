@@ -21,9 +21,7 @@ public interface ExtensionScanner {
      */
     Set<Class<?>> scan();
 
-    /**
-     * 默认扩展点扫描，扫描文件META-INF/io.joyrpc.extension
-     */
+
     class DefaultScanner implements ExtensionScanner {
 
         @Override

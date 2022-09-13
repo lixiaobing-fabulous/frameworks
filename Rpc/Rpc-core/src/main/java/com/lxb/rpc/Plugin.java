@@ -2,8 +2,10 @@ package com.lxb.rpc;
 
 import com.lxb.extension.ExtensionPoint;
 import com.lxb.extension.ExtensionPointLazy;
+import com.lxb.rpc.cluster.discovery.registry.RegistryFactory;
 import com.lxb.rpc.codec.serialization.Json;
 import com.lxb.rpc.codec.serialization.Serialization;
+import com.lxb.rpc.context.ConfigEventHandler;
 import com.lxb.rpc.context.ContextSupplier;
 import com.lxb.rpc.context.Environment;
 import com.lxb.rpc.event.EventBus;
@@ -38,6 +40,15 @@ public interface Plugin {
      * 全局变量提供者插件
      */
     ExtensionPoint<ContextSupplier, String> CONTEXT_SUPPLIER = new ExtensionPointLazy<>(ContextSupplier.class);
+
+    /**
+     * 注册中心插件
+     */
+    ExtensionPoint<RegistryFactory, String>    REGISTRY             = new ExtensionPointLazy<>(RegistryFactory.class);
+    /**
+     * 注册中心全局配置变更事件通知插件
+     */
+    ExtensionPoint<ConfigEventHandler, String> CONFIG_EVENT_HANDLER = new ExtensionPointLazy<>(ConfigEventHandler.class);
 
 
 }

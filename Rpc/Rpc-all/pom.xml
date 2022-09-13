@@ -96,6 +96,11 @@
             <artifactId>Rpc-serialization-fastjson</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.lxb</groupId>
+            <artifactId>Rpc-registry-broadcast</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
     </dependencies>
 
