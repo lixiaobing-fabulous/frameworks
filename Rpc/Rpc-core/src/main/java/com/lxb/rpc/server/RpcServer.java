@@ -70,9 +70,10 @@ public class RpcServer implements AutoCloseable {
     @SneakyThrows
     public RpcServer registerService(String serviceName, Object service) {
         serviceContext.registerService(serviceName, service);
-        Registry registry = REGISTRY.get("broadcast").getRegistry(URL.valueOf("broadcast://0.0.0.0"));
+        Registry registry = REGISTRY.get("consul").getRegistry(URL.valueOf("consul://0.0.0.0" + "?address=localhost"));
         registry.open().get();
-        registry.register(URL.valueOf("joy://" + localServiceInstance.getHost() + ":" + localServiceInstance.getPort() + "?alias=" + serviceName + "&serviceName=" + serviceName));
+        registry.register(URL.valueOf("joy://" + localServiceInstance.getHost() + ":" + localServiceInstance.getPort() +
+                "?alias=" + serviceName + "&serviceName=" + serviceName + "&side=provider"));
         return this;
     }
 

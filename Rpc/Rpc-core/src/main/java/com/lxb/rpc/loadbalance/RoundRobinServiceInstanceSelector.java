@@ -1,6 +1,7 @@
 package com.lxb.rpc.loadbalance;
 
 
+import com.lxb.rpc.cluster.Shard;
 import com.lxb.rpc.service.ServiceInstance;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public class RoundRobinServiceInstanceSelector implements ServiceInstanceSelecto
     private final AtomicInteger counter = new AtomicInteger();
 
     @Override
-    public ServiceInstance select(List<ServiceInstance> serviceInstances) {
+    public Shard select(List<Shard> serviceInstances) {
         int size = serviceInstances.size();
         int count = counter.getAndIncrement();
         int index = (count - 1) % size;

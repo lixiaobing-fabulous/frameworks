@@ -2,6 +2,7 @@ package com.lxb.rpc.client;
 
 import com.lxb.extension.URL;
 import com.lxb.rpc.InvocationRequest;
+import com.lxb.rpc.cluster.Shard;
 import com.lxb.rpc.cluster.discovery.event.ClusterEvent;
 import com.lxb.rpc.cluster.discovery.naming.ClusterHandler;
 import com.lxb.rpc.cluster.discovery.registry.Registry;
@@ -15,6 +16,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.lxb.rpc.Plugin.REGISTRY;
 import static com.lxb.rpc.client.ExchangeFuture.createExchangeFuture;
@@ -27,7 +29,7 @@ import static com.lxb.rpc.client.ExchangeFuture.removeExchangeFuture;
  * @since 1.0.0
  */
 public class ServiceInvocationHandler implements InvocationHandler {
-
+    private List<Shard> shards;
     private String serviceName;
 
     private final RpcClient rpcClient;
@@ -36,11 +38,38 @@ public class ServiceInvocationHandler implements InvocationHandler {
 
     private final ServiceInstanceSelector selector;
 
-    public ServiceInvocationHandler(String serviceName, RpcClient rpcClient) {
+    public ServiceInvocationHandler(String serviceName, RpcClient rpcClient, Class serviceInterfaceClass) {
         this.serviceName = serviceName;
         this.rpcClient = rpcClient;
         this.serviceRegistry = rpcClient.getServiceRegistry();
         this.selector = rpcClient.getSelector();
+        this.shards = new CopyOnWriteArrayList<>();
+        URL url = URL.valueOf("consul://0.0.0.0" + "?alias=" + serviceInterfaceClass.getName() + "&serviceName=" + serviceInterfaceClass.getName() +
+                "&address=localhost");
+        Registry registry = REGISTRY.get("consul").getRegistry(url);
+
+        registry.open();
+        registry.subscribe(url, (ClusterHandler) event -> {
+            List<ClusterEvent.ShardEvent> datum = event.getDatum();
+            for (ClusterEvent.ShardEvent shardEvent : datum) {
+                switch (shardEvent.getType()) {
+                    case ADD:
+                        Shard shardAdd = shardEvent.getShard();
+                        shards.add(shardAdd);
+                        break;
+                    case DELETE:
+                        Shard shardDelete = shardEvent.getShard();
+                        shards.remove(shardDelete);
+                        break;
+                    case UPDATE:
+                        Shard shardUpdate = shardEvent.getShard();
+                        shards.remove(shardUpdate);
+                        shards.add(shardUpdate);
+                        break;
+                }
+            }
+        });
+
     }
 
     @Override
@@ -56,7 +85,7 @@ public class ServiceInvocationHandler implements InvocationHandler {
 
     private Object execute(InvocationRequest request, Object proxy) {
 
-        ServiceInstance serviceInstance = selectServiceProviderInstance(request);
+        Shard serviceInstance = selectServiceProviderInstance(request);
 
         ChannelFuture channelFuture = rpcClient.connect(serviceInstance);
 
@@ -77,18 +106,9 @@ public class ServiceInvocationHandler implements InvocationHandler {
         channelFuture.channel().writeAndFlush(request);
     }
 
-    private ServiceInstance selectServiceProviderInstance(InvocationRequest request) {
-        List<ServiceInstance> serviceInstances = serviceRegistry.getServiceInstances(serviceName);
-        URL                   url              = URL.valueOf("broadcast://0.0.0.0" + "?alias=" + request.getServiceName() + "&serviceName=" + request.getServiceName());
-        Registry              registry         = REGISTRY.get("broadcast").getRegistry(url);
-        registry.open();
-        registry.subscribe(url, new ClusterHandler() {
-            @Override
-            public void handle(ClusterEvent event) {
-                System.out.println(event);
-            }
-        });
-        return selector.select(serviceInstances);
+    private Shard selectServiceProviderInstance(InvocationRequest request) {
+
+        return selector.select(shards);
     }
 
     private InvocationRequest createRequest(Method method, Object[] args) {

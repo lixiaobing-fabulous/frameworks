@@ -1,6 +1,7 @@
 package com.lxb.rpc.client;
 
 import com.lxb.extension.ExtensionManager;
+import com.lxb.rpc.cluster.Shard;
 import com.lxb.rpc.codec.MessageDecoder;
 import com.lxb.rpc.codec.MessageEncoder;
 import com.lxb.rpc.loadbalance.ServiceInstanceSelector;
@@ -54,12 +55,12 @@ public class RpcClient implements AutoCloseable {
 
     public <T> T getService(String serviceName, Class<T> serviceInterfaceClass) {
         ProxyFactory proxyFactory = ExtensionManager.getOrLoadExtension(ProxyFactory.class);
-        return (T) proxyFactory.getProxy(serviceInterfaceClass, new ServiceInvocationHandler(serviceName, this));
+        return (T) proxyFactory.getProxy(serviceInterfaceClass, new ServiceInvocationHandler(serviceName, this, serviceInterfaceClass));
     }
 
-    public ChannelFuture connect(ServiceInstance serviceInstance) {
-        String        host          = serviceInstance.getHost();
-        int           port          = serviceInstance.getPort();
+    public ChannelFuture connect(Shard serviceInstance) {
+        String        host          = serviceInstance.getUrl().getHost();
+        int           port          = serviceInstance.getUrl().getPort();
         ChannelFuture channelFuture = bootstrap.connect(host, port);
         return channelFuture.awaitUninterruptibly();
     }

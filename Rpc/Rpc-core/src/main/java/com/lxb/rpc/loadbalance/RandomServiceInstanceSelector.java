@@ -1,5 +1,6 @@
 package com.lxb.rpc.loadbalance;
 
+import com.lxb.rpc.cluster.Shard;
 import com.lxb.rpc.service.ServiceInstance;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RandomServiceInstanceSelector implements ServiceInstanceSelector {
 
     @Override
-    public ServiceInstance select(List<ServiceInstance> serviceInstances) {
+    public Shard select(List<Shard> serviceInstances) {
         int size = serviceInstances.size();
         int index = ThreadLocalRandom.current().nextInt(size);
         return serviceInstances.get(index);
