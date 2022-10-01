@@ -2,6 +2,7 @@ package com.lxb.rpc;
 
 import com.lxb.extension.ExtensionPoint;
 import com.lxb.extension.ExtensionPointLazy;
+import com.lxb.rpc.cache.CacheFactory;
 import com.lxb.rpc.cluster.discovery.registry.RegistryFactory;
 import com.lxb.rpc.codec.serialization.Json;
 import com.lxb.rpc.codec.serialization.Serialization;
@@ -9,9 +10,20 @@ import com.lxb.rpc.context.ConfigEventHandler;
 import com.lxb.rpc.context.ContextSupplier;
 import com.lxb.rpc.context.Environment;
 import com.lxb.rpc.event.EventBus;
+import com.lxb.rpc.expression.ExpressionProvider;
 import com.lxb.rpc.proxy.IDLFactory;
 
 public interface Plugin {
+
+    /**
+     * 缓存插件
+     */
+    ExtensionPoint<CacheFactory, String> CACHE = new ExtensionPointLazy<>(CacheFactory.class);
+
+    /**
+     * 表达式插件
+     */
+    ExtensionPoint<ExpressionProvider, String> EXPRESSION_PROVIDER = new ExtensionPointLazy<>(ExpressionProvider.class);
 
     /**
      * JSON提供者

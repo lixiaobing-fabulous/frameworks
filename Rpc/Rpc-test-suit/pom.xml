@@ -16,6 +16,7 @@
         <module>Rpc-test-serialization</module>
         <module>Rpc-test-cluster</module>
         <module>Rpc-test-util</module>
+        <module>Rpc-test-cache</module>
     </modules>
 
     <artifactId>Rpc-test-suit</artifactId>

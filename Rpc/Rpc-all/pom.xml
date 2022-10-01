@@ -113,9 +113,20 @@
         </dependency>
         <dependency>
             <groupId>org.lxb</groupId>
-            <artifactId>Rpc-registry-zk</artifactId>
+            <artifactId>Rpc-cache-cache2k</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.lxb</groupId>
+            <artifactId>Rpc-cache-caffeine</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lxb</groupId>
+            <artifactId>Rpc-cache-guava</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 
 </project>
