@@ -15,6 +15,8 @@
         <module>Rpc-registry-broadcast</module>
         <module>Rpc-registry-consul</module>
         <module>Rpc-registry-etcd</module>
+        <module>Rpc-registry-nacos</module>
+        <module>Rpc-registry-zk</module>
     </modules>
 
     <properties>

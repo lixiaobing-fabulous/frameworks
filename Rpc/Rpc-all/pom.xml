@@ -106,7 +106,16 @@
             <artifactId>Rpc-registry-consul</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.lxb</groupId>
+            <artifactId>Rpc-registry-etcd</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lxb</groupId>
+            <artifactId>Rpc-registry-zk</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

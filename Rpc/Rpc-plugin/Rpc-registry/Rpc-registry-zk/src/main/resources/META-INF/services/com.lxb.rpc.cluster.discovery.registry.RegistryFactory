@@ -1,0 +1,2 @@
+com.lxb.rpc.registry.zk.ZookeeperRegistryFactory
+com.lxb.rpc.registry.zk.ZKRegistryFactory

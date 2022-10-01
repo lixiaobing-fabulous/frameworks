@@ -1,0 +1,2 @@
+com.lxb.rpc.registry.nacos.NacosRegistryFactory
+com.lxb.rpc.registry.nacos.dubbo.DubboNacosRegistryFactory
