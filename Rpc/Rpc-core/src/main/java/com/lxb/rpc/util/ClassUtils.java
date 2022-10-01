@@ -5,7 +5,6 @@ package com.lxb.rpc.util;
 import com.lxb.rpc.exception.CreationException;
 import com.lxb.rpc.exception.MethodOverloadException;
 import com.lxb.rpc.exception.ReflectionException;
-import com.lxb.rpc.util.thread.IDLConverter;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.lxb.rpc.util.thread;
+package com.lxb.rpc.util;
 
 
 import java.util.function.Function;

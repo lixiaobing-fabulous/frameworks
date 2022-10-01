@@ -1,8 +1,6 @@
 package com.lxb.rpc.util;
 
 
-import com.lxb.rpc.util.thread.IDLConverter;
-
 /**
  * 接口描述语言产生的类型描述
  */
