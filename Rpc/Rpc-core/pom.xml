@@ -21,6 +21,11 @@
             <artifactId>Rpc-extension-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.lxb</groupId>
+            <artifactId>Rpc-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>io.netty</groupId>

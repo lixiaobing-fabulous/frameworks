@@ -17,6 +17,7 @@
         <module>Rpc-test-cluster</module>
         <module>Rpc-test-util</module>
         <module>Rpc-test-cache</module>
+        <module>Rpc-test-proxy</module>
     </modules>
 
     <artifactId>Rpc-test-suit</artifactId>

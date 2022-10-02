@@ -2,6 +2,7 @@ package com.lxb.rpc;
 
 import com.lxb.extension.ExtensionPoint;
 import com.lxb.extension.ExtensionPointLazy;
+import com.lxb.rpc.apm.health.Doctor;
 import com.lxb.rpc.cache.CacheFactory;
 import com.lxb.rpc.cluster.discovery.registry.RegistryFactory;
 import com.lxb.rpc.codec.serialization.Json;
@@ -12,8 +13,18 @@ import com.lxb.rpc.context.Environment;
 import com.lxb.rpc.event.EventBus;
 import com.lxb.rpc.expression.ExpressionProvider;
 import com.lxb.rpc.proxy.IDLFactory;
+import com.lxb.rpc.proxy.ProxyFactory;
 
 public interface Plugin {
+    /**
+     * 医生插件
+     */
+    ExtensionPoint<Doctor, String> DOCTOR = new ExtensionPointLazy<>(Doctor.class);
+
+    /**
+     * Proxy插件
+     */
+    ExtensionPoint<ProxyFactory, String> PROXY = new ExtensionPointLazy<>(ProxyFactory.class);
 
     /**
      * 缓存插件
